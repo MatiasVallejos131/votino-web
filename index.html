@@ -820,28 +820,31 @@
 		});
 
 		// 3. Guardar la nueva contraseña en Supabase
+
 		document.getElementById("recoveryForm").addEventListener("submit", async (e) => {
-			e.preventDefault();
-			const newPassword = document.getElementById("newRecoveryPassword").value;
-
-			if (newPassword.length < 8) {
-				showStatus("La contraseña debe tener al menos 8 caracteres.", "error");
-				return;
-			}
-
-			showStatus("Actualizando contraseña…");
-
-			const { error } = await db.auth.updateUser({ password: newPassword });
-
-			if (error) {
-				showStatus("Error al actualizar la contraseña: " + error.message, "error");
-			} else {
-				document.getElementById("newRecoveryPassword").value = "";
-				recoveryPanel.hidden = true;
-				showStatus("Contraseña actualizada correctamente.", "success");
-				await loadApp();
-			}
+		  e.preventDefault();
+		  const newPassword = document.getElementById("newRecoveryPassword").value;
+		
+		  if (newPassword.length < 8) {
+			showStatus("La contraseña debe tener al menos 8 caracteres.", "error");
+			return;
+		  }
+		
+		  showStatus("Actualizando contraseña…");
+		
+		  // Se actualiza directamente contra el servicio de Auth de Supabase
+		  const { error } = await db.auth.updateUser({ password: newPassword });
+		
+		  if (error) {
+			showStatus("Error al actualizar la contraseña: " + error.message, "error");
+		  } else {
+			document.getElementById("newRecoveryPassword").value = "";
+			recoveryPanel.hidden = true;
+			showStatus("Contraseña actualizada correctamente.", "success");
+			await loadApp();
+		  }
 		});
+
 		// --- Recuperación por correo ---/
 
 
