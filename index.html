@@ -1,205 +1,852 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Voto Electrónico</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 400px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #f9f9f9;
-      color: #333;
-    }
-    section {
-      background: white;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-    }
-    h2 { margin-top: 0; font-size: 1.5rem; }
-    label { display: block; margin-top: 12px; font-weight: 500; font-size: 0.9rem; }
-    input { width: 100%; padding: 10px; margin-top: 6px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    button { width: 100%; margin-top: 20px; padding: 10px; background-color: #0066cc; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-    button:hover { background-color: #0052a3; }
-    .muted { color: #666; font-size: 0.9rem; }
-    #status { margin-top: 15px; font-size: 0.9rem; padding: 10px; border-radius: 4px; display: none; }
-    .success { background-color: #e6f4ea; color: #137333; display: block !important; }
-    .error { background-color: #fce8e6; color: #c5221f; display: block !important; }
-    .muted-status { background-color: #f1f3f4; color: #3c4043; display: block !important; }
-  </style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Consulta de eventos</title>
 
-  <!-- SDK de Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<style>
+		body {
+			max-width: 900px;
+			margin: 2rem auto;
+			padding: 0 1rem;
+			font-family: system-ui, sans-serif;
+			color: #202124;
+			background: #f7f8fa;
+		}
+
+		h1, h2 { margin-bottom: .5rem; }
+
+		section, .card {
+			margin: 1rem 0;
+			padding: 1rem;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+			background: white;
+		}
+
+		label {
+			display: block;
+			margin: .75rem 0 .25rem;
+		}
+
+		input, select {
+			box-sizing: border-box;
+			width: 100%;
+			max-width: 420px;
+			padding: .65rem;
+			margin-bottom: .5rem;
+		}
+
+		/* ESTILOS DE BOTONES EN RELIEVE 3D */
+		button {
+			padding: .6rem .85rem;
+			margin: .25rem .25rem .25rem 0;
+			cursor: pointer;
+			font-weight: 600;
+			border-radius: 6px;
+			/* Gradiente de volumen e iluminación cenital */
+			background: linear-gradient(to bottom, #ffffff, #e1e4e8);
+			color: #24292e;
+			/* Doble sombra: biselado superior brillante y sombra inferior sutil */
+			border: 1px solid #cbccd1;
+			box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset, 0 1px 3px rgba(0, 0, 0, 0.12);
+			transition: all 0.05s ease;
+		}
+
+		button:hover {
+			background: linear-gradient(to bottom, #ffffff, #dcdfe3);
+			border-color: #b4b7bd;
+		}
+
+		/* Efecto de botón presionado (se hunde) */
+		button:active {
+			background: linear-gradient(to bottom, #d2d5da, #e6e8ec);
+			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+			transform: translateY(1px);
+		}
+
+		button:disabled {
+			cursor: not-allowed;
+			opacity: .5;
+			box-shadow: none;
+			background: #e1e4e8;
+		}
+
+		.admin-actions {
+			display: flex;
+			align-items: center;
+			gap: .5rem;
+		}
+
+		#totals {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+			gap: .75rem;
+		}
+
+		.card { margin: 0; }
+
+		.count {
+			font-size: 1.8rem;
+			font-weight: 700;
+		}
+
+		.muted { color: #555; }
+		.error { color: #a40000; }
+		.success { color: #176b31; }
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		th, td {
+			padding: .6rem;
+			border-bottom: 1px solid #ddd;
+			text-align: left;
+		}
+
+		[hidden] {
+			display: none !important;
+		}
+
+		.card.evento-1 {
+			background-color: #e8f5e9;
+			border-color: #81c784;
+		}
+		
+		.card.evento-2 {
+			background-color: #fff3e0;
+			border-color: #ffb74d;
+		}
+		
+		.card.evento-3 {
+			background-color: #ffebee;
+			border-color: #e57373;
+		}
+
+		/* Estilos adaptativos para la cabecera de sesión y mobile */
+		.session-info {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0.75rem 1.5rem;
+			margin-bottom: 1rem;
+		}
+
+		.logout-group {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.refresh-group {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+			margin-top: 0.25rem;
+			width: 100%;
+		}
+
+		/* Botón de borrado masivo alineado a la derecha con estilo 3D rojo */
+		#deleteAllEventsButton {
+			background: linear-gradient(to bottom, #fca5a5, #ef4444);
+			color: white;
+			border: 1px solid #dc2626;
+			box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 1px 3px rgba(0, 0, 0, 0.2);
+			margin-left: auto;
+		}
+
+		#deleteAllEventsButton:hover {
+			background: linear-gradient(to bottom, #f87171, #dc2626);
+		}
+
+		#deleteAllEventsButton:active {
+			background: linear-gradient(to bottom, #b91c1c, #ef4444);
+			box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+			transform: translateY(1px);
+		}
+
+		.last-vote-info {
+			margin-top: .75rem;
+			font-size: 0.9rem;
+		}
+
+		@media (max-width: 600px) {
+			.table-wrap { overflow-x: auto; }
+			
+			.session-info {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 0.5rem;
+			}
+
+			#deleteAllEventsButton {
+				margin-left: 0;
+				width: 100%;
+			}
+		}
+	</style>
 </head>
+
 <body>
+	<h1>Sistema de Voto Electrónico</h1>
+	<p id="status" class="muted" aria-live="polite"></p>
 
-  <!-- ESTADO / MENSAJES -->
-  <div id="status"></div>
+	<!-- PANEL DE LOGIN -->
+	<section id="loginPanel">
+		<h2>Iniciar sesión</h2>
 
-  <!-- PANEL DE LOGIN -->
-  <section id="loginPanel">
-    <h2>Iniciar sesión</h2>
-    <form id="loginForm">
-      <label for="email">Correo electrónico</label>
-      <input id="email" type="email" autocomplete="username" required>
+		<form id="loginForm">
+			<label for="email">Correo electrónico</label>
+			<input id="email" type="email" autocomplete="username" required>
 
-      <label for="password">Contraseña</label>
-      <input id="password" type="password" autocomplete="current-password" required>
+			<label for="password">Contraseña</label>
+			<input id="password" type="password" autocomplete="current-password" required>
 
-      <button type="submit">Entrar</button>
-    </form>
+			<p></p>
+			<button type="submit">Entrar</button>
+		</form>
 
-    <p style="margin-top: 1rem; text-align: center;">
-      <a href="#" id="forgotPasswordLink" style="font-size: 0.9rem; color: #0066cc; text-decoration: none;">¿Olvidaste tu contraseña?</a>
-    </p>
-  </section>
+		<p style="margin-top: 1rem;">
+			<a href="#" id="forgotPasswordLink" style="font-size: 0.9rem; color: #0066cc; text-decoration: none;">¿Olvidaste tu contraseña?</a>
+		</p>
+	</section>
 
-  <!-- PANEL PARA DEFINIR NUEVA CONTRASEÑA (oculto por defecto) -->
-  <section id="recoveryPanel" hidden>
-    <h2>Restablecer contraseña</h2>
-    <p class="muted">Ingresá tu nueva contraseña para recuperar el acceso.</p>
+	<!-- PANEL PARA DEFINIR NUEVA CONTRASEÑA (oculto por defecto) -->
+	<section id="recoveryPanel" hidden>
+		<h2>Restablecer contraseña</h2>
+		<p class="muted">Ingresá tu nueva contraseña para recuperar el acceso.</p>
 
-    <form id="recoveryForm">
-      <label for="newRecoveryPassword">Nueva contraseña (mínimo 8 caracteres)</label>
-      <input id="newRecoveryPassword" type="password" autocomplete="new-password" minlength="8" required>
+		<form id="recoveryForm">
+			<label for="newRecoveryPassword">Nueva contraseña (mínimo 8 caracteres)</label>
+			<input id="newRecoveryPassword" type="password" autocomplete="new-password" minlength="8" required>
 
-      <button type="submit">Actualizar contraseña</button>
-    </form>
-  </section>
+			<p></p>
+			<button type="submit">Actualizar contraseña</button>
+		</form>
+	</section>
 
-  <!-- PANEL PRINCIPAL DE LA APLICACIÓN (oculto por defecto) -->
-  <section id="appPanel" hidden>
-    <h2>Panel de Votación</h2>
-    <p class="muted">Sesión iniciada correctamente.</p>
-    <button id="logoutBtn" style="background-color: #d93025;">Cerrar sesión</button>
-  </section>
 
-  <script>
-    // Configuración de Supabase (Se mantienen los mismos valores para no alterar el firmware remoto)
-    const SUPABASE_URL = "TU_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "TU_SUPABASE_ANON_KEY";
-    
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+	<!-- PANEL PRINCIPAL DE LA APLICACIÓN -->
+	<section id="appPanel" hidden>
+		<div class="session-info">
+			<div>Sesión: <strong id="userEmail"></strong></div>
+			<div>Perfil: <strong id="userRole"></strong></div>
+			
+			<div class="logout-group">
+				<button id="logoutButton" type="button">Cerrar sesión</button>
+				<span id="timerContainer" aria-live="off">
+					(logout en: <strong id="timerCountdown">--</strong>s)
+				</span>
+			</div>
+		</div>
 
-    const loginPanel = document.getElementById("loginPanel");
-    const recoveryPanel = document.getElementById("recoveryPanel");
-    const appPanel = document.getElementById("appPanel");
-    const statusDiv = document.getElementById("status");
+		<h2>Votos Acumulados</h2>
 
-    function showStatus(text, type = "muted-status") {
-      statusDiv.className = type;
-      statusDiv.textContent = text;
-    }
+		<div id="totals">
+			<div class="card evento-1">
+				Positivos
+				<div class="count" id="total1">—</div>
+			</div>
+		
+			<div class="card evento-2">
+				Neutros
+				<div class="count" id="total2">—</div>
+			</div>
+		
+			<div class="card evento-3">
+				Negativos
+				<div class="count" id="total3">—</div>
+			</div>
+		</div>
 
-    // Temporizadores dummy para evitar errores con las funciones auxiliares
-    function stopInactivityTimer() {}
-    function stopAutoRefreshTimer() {}
+		<p class="last-vote-info muted">Último voto registrado: <strong id="lastVoteTime">—</strong></p>
 
-    async function loadApp() {
-      const { data: { session } } = await db.auth.getSession();
-      if (session) {
-        loginPanel.hidden = true;
-        recoveryPanel.hidden = true;
-        appPanel.hidden = false;
-        showStatus("Bienvenido al sistema.", "success");
-      } else {
-        loginPanel.hidden = false;
-        recoveryPanel.hidden = true;
-        appPanel.hidden = true;
-      }
-    }
+		<p></p>
+		<div class="refresh-group">
+			<button id="refreshButton" type="button">Actualizar totales</button>
+			<span class="muted" aria-live="off">
+				(actualiza en: <strong id="refreshCountdown">--</strong>s)
+			</span>
+			<!-- Botón de borrado alineado a la derecha (solo visible para admin) -->
+			<button id="deleteAllEventsButton" type="button" hidden>
+				Borrar todos los registros
+			</button>
+		</div>
+		<pre id="totalsDetails" class="muted"></pre>
 
-    // 1. Envío del correo de recuperación
-    document.getElementById("forgotPasswordLink").addEventListener("click", async (e) => {
-      e.preventDefault();
-      const emailInput = document.getElementById("email");
-      const email = emailInput.value.trim();
+		<!-- SECCIÓN ADMINISTRATIVA -->
+		<section id="adminPanel" hidden>
+			<h2>Administración de usuarios</h2>
 
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showStatus("Ingresá tu correo electrónico en el campo de arriba para enviarte el enlace.", "error");
-        emailInput.focus();
-        return;
-      }
+			<div class="admin-actions">
+				<button id="refreshUsersButton" type="button">Actualizar lista</button>
+				<button id="toggleCreateUserButton" type="button" aria-expanded="false" aria-controls="createUserForm">
+					Crear Usuario
+				</button>
+			</div>
 
-      if (!confirm(`¿Enviar enlace de recuperación a ${email}?`)) return;
+			<form id="createUserForm" hidden>
+				<h3>Nuevo usuario</h3>
 
-      showStatus("Enviando correo de recuperación…");
+				<label for="newUserEmail">Correo electrónico</label>
+				<input id="newUserEmail" type="email" autocomplete="email" required>
 
-      const { error } = await db.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin,
-      });
+				<label for="newUserName">Nombre</label>
+				<input id="newUserName" type="text" maxlength="30" placeholder="Ej. Juan">
 
-      if (error) {
-        showStatus("No se pudo enviar el correo: " + error.message, "error");
-      } else {
-        showStatus("Correo enviado. Revisá tu bandeja de entrada.", "success");
-      }
-    });
+				<label for="newUserLastName">Apellido</label>
+				<input id="newUserLastName" type="text" maxlength="30" placeholder="Ej. Pérez">
 
-    // 2. Detección del retorno desde el enlace del correo
-    db.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY") {
-        stopInactivityTimer();
-        stopAutoRefreshTimer();
-        loginPanel.hidden = true;
-        appPanel.hidden = true;
-        recoveryPanel.hidden = false;
-        showStatus("Ingresá tu nueva contraseña.", "muted-status");
-      }
-    });
+				<label for="newUserDni">DNI (8 dígitos)</label>
+				<input id="newUserDni" type="text" maxlength="8" pattern="\d{8}" placeholder="Ej. 12345678">
 
-    // 3. Guardar la nueva contraseña en Supabase
-    document.getElementById("recoveryForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const newPassword = document.getElementById("newRecoveryPassword").value;
+				<label for="newUserPassword">Contraseña inicial (mínimo 8 caracteres)</label>
+				<input id="newUserPassword" type="password" autocomplete="new-password" minlength="8" required>
 
-      if (newPassword.length < 8) {
-        showStatus("La contraseña debe tener al menos 8 caracteres.", "error");
-        return;
-      }
+				<label for="newUserProfile">Perfil</label>
+				<select id="newUserProfile">
+					<option value="consulta">Consulta</option>
+					<option value="admin">Administrador</option>
+				</select>
 
-      showStatus("Actualizando contraseña…");
+				<button type="submit">Guardar usuario</button>
+			</form>
 
-      const { error } = await db.auth.updateUser({ password: newPassword });
+			<div class="table-wrap">
+				<table>
+					<thead>
+						<tr>
+							<th>Nombre y Apellido</th>
+							<th>DNI</th>
+							<th>Correo</th>
+							<th>Perfil</th>
+							<th>Último ingreso</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody id="usersBody"></tbody>
+				</table>
+			</div>
+		</section>
+	</section>
 
-      if (error) {
-        showStatus("Error al actualizar la contraseña: " + error.message, "error");
-      } else {
-        document.getElementById("newRecoveryPassword").value = "";
-        recoveryPanel.hidden = true;
-        showStatus("Contraseña actualizada correctamente.", "success");
-        await loadApp();
-      }
-    });
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    // Manejo de Login estándar
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+	<script>
+		const SUPABASE_URL = "https://gzfnujotyphpjyowduyy.supabase.co";
+		const SUPABASE_PUBLIC_KEY = "sb_publishable_PNKmjPJ_Pf7q8W0322nocg_z4KtPcjQ";
 
-      showStatus("Iniciando sesión...");
-      const { error } = await db.auth.signInWithPassword({ email, password });
+		const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
+		
+		// Nodos principales del DOM
+		const statusEl = document.getElementById("status");
+		const loginPanel = document.getElementById("loginPanel");
+		const appPanel = document.getElementById("appPanel");
+		const adminPanel = document.getElementById("adminPanel");
+		const usersBody = document.getElementById("usersBody");
+		const createUserForm = document.getElementById("createUserForm");
+		const toggleCreateUserButton = document.getElementById("toggleCreateUserButton");
+		const timerCountdown = document.getElementById("timerCountdown");
+		const refreshCountdown = document.getElementById("refreshCountdown");
+		const lastVoteTimeEl = document.getElementById("lastVoteTime");
+		const deleteAllEventsButton = document.getElementById("deleteAllEventsButton");
 
-      if (error) {
-        showStatus("Error al iniciar sesión: " + error.message, "error");
-      } else {
-        loadApp();
-      }
-    });
+		// Configuración de temporizadores
+		const INACTIVITY_TIMEOUT_SECONDS = 60;
+		const AUTO_REFRESH_SECONDS = 15;
 
-    // Logout
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await db.auth.signOut();
-      loadApp();
-    });
+		let countdownInterval = null;
+		let refreshInterval = null;
 
-    // Inicialización al cargar la página
-    loadApp();
-  </script>
+		let remainingSeconds = INACTIVITY_TIMEOUT_SECONDS;
+		let remainingRefreshSeconds = AUTO_REFRESH_SECONDS;
+		let currentUserId = null;
+
+		// --- TEMPORIZADOR DE INACTIVIDAD ---
+
+		function startInactivityTimer() {
+			stopInactivityTimer();
+			remainingSeconds = INACTIVITY_TIMEOUT_SECONDS;
+			updateTimerDisplay();
+
+			countdownInterval = setInterval(async () => {
+				remainingSeconds -= 1;
+				updateTimerDisplay();
+
+				if (remainingSeconds <= 0) {
+					showStatus("Sesión cerrada por inactividad.", "muted");
+					await performLogout();
+				}
+			}, 1000);
+		}
+
+		function stopInactivityTimer() {
+			if (countdownInterval) {
+				clearInterval(countdownInterval);
+				countdownInterval = null;
+			}
+		}
+
+		function resetInactivityTimer() {
+			if (!appPanel.hidden) {
+				remainingSeconds = INACTIVITY_TIMEOUT_SECONDS;
+				updateTimerDisplay();
+			}
+		}
+
+		function updateTimerDisplay() {
+			if (timerCountdown) timerCountdown.textContent = remainingSeconds;
+		}
+
+		// --- TEMPORIZADOR DE AUTO-REFRESH DE VOTOS ---
+
+		function startAutoRefreshTimer() {
+			stopAutoRefreshTimer();
+			remainingRefreshSeconds = AUTO_REFRESH_SECONDS;
+			updateRefreshDisplay();
+
+			refreshInterval = setInterval(async () => {
+				remainingRefreshSeconds -= 1;
+				updateRefreshDisplay();
+
+				if (remainingRefreshSeconds <= 0) {
+					remainingRefreshSeconds = AUTO_REFRESH_SECONDS;
+					try {
+						await loadTotals();
+					} catch (err) {
+						// Silencia errores en segundo plano
+					}
+				}
+			}, 1000);
+		}
+
+		function stopAutoRefreshTimer() {
+			if (refreshInterval) {
+				clearInterval(refreshInterval);
+				refreshInterval = null;
+			}
+		}
+
+		function resetAutoRefreshTimer() {
+			remainingRefreshSeconds = AUTO_REFRESH_SECONDS;
+			updateRefreshDisplay();
+		}
+
+		function updateRefreshDisplay() {
+			if (refreshCountdown) refreshCountdown.textContent = remainingRefreshSeconds;
+		}
+
+		// Reinicio global de ambos contadores al pulsar cualquier botón
+		document.addEventListener("click", (e) => {
+			if (e.target.closest("button")) {
+				resetInactivityTimer();
+				resetAutoRefreshTimer();
+			}
+		});
+
+		// --- FUNCIONES AUXILIARES ---
+
+		function showStatus(message, kind = "muted") {
+			statusEl.textContent = message;
+			statusEl.className = kind;
+		}
+
+		// Formato exacto: dd/mm/aaaa HH:mm
+		function formatDate(isoString) {
+			if (!isoString) return "Nunca";
+			const d = new Date(isoString);
+			if (isNaN(d.getTime())) return "—";
+
+			const day = String(d.getDate()).padStart(2, '0');
+			const month = String(d.getMonth() + 1).padStart(2, '0');
+			const year = d.getFullYear();
+			const hours = String(d.getHours()).padStart(2, '0');
+			const minutes = String(d.getMinutes()).padStart(2, '0');
+
+			return `${day}/${month}/${year} ${hours}:${minutes}`;
+		}
+
+		function createButton(text, onClick, disabled = false) {
+			const btn = document.createElement("button");
+			btn.type = "button";
+			btn.textContent = text;
+			btn.disabled = disabled;
+			btn.addEventListener("click", onClick);
+			return btn;
+		}
+
+		async function invokeAdmin(body) {
+			const { data, error } = await db.functions.invoke("admin-users", { body });
+
+			if (error) {
+				let message = error.message;
+				try {
+					const details = await error.context.json();
+					message = details.error || message;
+				} catch {}
+				throw new Error(message);
+			}
+
+			if (data?.error) throw new Error(data.error);
+			return data;
+		}
+
+		// --- PROCESAMIENTO Y DATOS DE VOTOS ---
+
+		function displayTotals(result) {
+			const totals = { 1: null, 2: null, 3: null };
+			let recognized = false;
+			const rows = Array.isArray(result) ? result : [result];
+
+			for (const row of rows) {
+				if (!row || typeof row !== "object") continue;
+
+				const keys = Object.keys(row);
+				const eventKey = keys.find(k => /^(evento|event|event_id|tipo)$/i.test(k));
+				const countKey = keys.find(k => /^(total|cantidad|count|conteo)$/i.test(k));
+
+				if (eventKey && countKey) {
+					const eventNumber = Number(row[eventKey]);
+					const count = Number(row[countKey]);
+					if ([1, 2, 3].includes(eventNumber) && Number.isFinite(count)) {
+						totals[eventNumber] = count;
+						recognized = true;
+					}
+				}
+
+				for (const n of [1, 2, 3]) {
+					const key = keys.find(name =>
+						new RegExp(`^(total|cantidad|count|conteo|evento|event)_?${n}$|^${n}_?(total|cantidad|count|conteo|evento|event)$`, "i").test(name)
+					);
+
+					if (key && Number.isFinite(Number(row[key]))) {
+						totals[n] = Number(row[key]);
+						recognized = true;
+					}
+				}
+			}
+
+			for (const n of [1, 2, 3]) {
+				document.getElementById(`total${n}`).textContent = totals[n] === null ? "—" : String(totals[n]);
+			}
+
+			document.getElementById("totalsDetails").textContent = recognized
+				? ""
+				: "No reconocí el formato de respuesta de total_eventos(). Respuesta: " + JSON.stringify(result);
+		}
+
+		async function loadTotals() {
+			const { data, error } = await db.rpc("total_eventos");
+			if (error) throw error;
+			displayTotals(data);
+
+			const { data: lastEvent } = await db
+				.from("eventos")
+				.select("timestamp")
+				.order("timestamp", { ascending: false })
+				.limit(1)
+				.maybeSingle();
+
+			lastVoteTimeEl.textContent = formatDate(lastEvent?.timestamp);
+		}
+
+		// --- GESTIÓN DE USUARIOS ---
+
+		async function loadUsers() {
+			usersBody.replaceChildren();
+			const result = await invokeAdmin({ action: "list_users" });
+
+			for (const user of result.users || []) {
+				const row = document.createElement("tr");
+				const nameCell = document.createElement("td");
+				const dniCell = document.createElement("td");
+				const emailCell = document.createElement("td");
+				const profileCell = document.createElement("td");
+				const lastLoginCell = document.createElement("td");
+				const actionsCell = document.createElement("td");
+
+				nameCell.textContent = `${user.nombre || ""} ${user.apellido || ""}`.trim() || "—";
+				dniCell.textContent = user.dni || "—";
+				emailCell.textContent = user.email || "(sin correo)";
+				profileCell.textContent = user.perfil || "sin perfil";
+				lastLoginCell.textContent = formatDate(user.last_sign_in_at);
+
+				const resetButton = createButton("Cambiar contraseña", async () => {
+					const newPassword = prompt(`Nueva contraseña para ${user.email} (mínimo 8 caracteres):`);
+					resetInactivityTimer();
+					resetAutoRefreshTimer();
+					if (!newPassword) return;
+
+					if (newPassword.length < 8) {
+						showStatus("La contraseña debe tener al menos 8 caracteres.", "error");
+						return;
+					}
+
+					if (!confirm(`¿Cambiar la contraseña de ${user.email}?`)) return;
+					resetInactivityTimer();
+					resetAutoRefreshTimer();
+
+					try {
+						await invokeAdmin({ action: "reset_password", userId: user.id, newPassword });
+						showStatus("Contraseña actualizada.", "success");
+					} catch (err) {
+						showStatus(err.message, "error");
+					}
+				});
+
+				const deleteButton = createButton("Eliminar", async () => {
+					const confirmed = confirm(`¿Eliminar la cuenta de ${user.email}? Esta acción no se puede deshacer.`);
+					resetInactivityTimer();
+					resetAutoRefreshTimer();
+
+					if (!confirmed) return;
+
+					try {
+						await invokeAdmin({ action: "delete_user", userId: user.id });
+						showStatus("Usuario eliminado.", "success");
+						await loadUsers();
+					} catch (err) {
+						showStatus(err.message, "error");
+					}
+				}, user.id === currentUserId);
+
+				actionsCell.append(resetButton, deleteButton);
+				row.append(nameCell, dniCell, emailCell, profileCell, lastLoginCell, actionsCell);
+				usersBody.append(row);
+			}
+		}
+
+		// --- MANEJO DE SESIÓN Y VISTAS ---
+
+		async function performLogout() {
+			stopInactivityTimer();
+			stopAutoRefreshTimer();
+			const { error } = await db.auth.signOut();
+			if (error) showStatus(error.message, "error");
+			await loadApp();
+		}
+
+		async function loadApp() {
+			showStatus("");
+			const { data: { session } } = await db.auth.getSession();
+
+			if (!session) {
+				stopInactivityTimer();
+				stopAutoRefreshTimer();
+				currentUserId = null;
+				loginPanel.hidden = false;
+				appPanel.hidden = true;
+				return;
+			}
+
+			currentUserId = session.user.id;
+			loginPanel.hidden = true;
+			appPanel.hidden = false;
+
+			startInactivityTimer();
+			startAutoRefreshTimer();
+
+			document.getElementById("userEmail").textContent = session.user.email || "(sin correo)";
+
+			const { data: profile, error } = await db
+				.from("perfiles")
+				.select("perfil")
+				.eq("user_id", session.user.id)
+				.maybeSingle();
+
+			if (error) {
+				showStatus("No se pudo leer tu perfil: " + error.message, "error");
+				return;
+			}
+
+			const role = profile?.perfil || "sin perfil";
+			document.getElementById("userRole").textContent = role;
+			
+			const isAdmin = role === "admin";
+			adminPanel.hidden = !isAdmin;
+			deleteAllEventsButton.hidden = !isAdmin;
+
+			try {
+				await loadTotals();
+				if (isAdmin) await loadUsers();
+				showStatus("Sesión iniciada.", "success");
+			} catch (err) {
+				showStatus(err.message || "Ocurrió un error al cargar los datos.", "error");
+			}
+		}
+
+		// --- EVENT LISTENERS ---
+
+		toggleCreateUserButton.addEventListener("click", () => {
+			const opening = createUserForm.hidden;
+			createUserForm.hidden = !opening;
+			toggleCreateUserButton.textContent = opening ? "Cancelar" : "Crear Usuario";
+			toggleCreateUserButton.setAttribute("aria-expanded", String(opening));
+			if (opening) document.getElementById("newUserName").focus();
+		});
+
+		deleteAllEventsButton.addEventListener("click", async () => {
+			const firstConfirm = confirm("⚠️ ATENCIÓN: ¿Estás seguro de que querés borrar TODOS los registros de votos acumulados? Esta acción es irreversible.");
+			resetInactivityTimer();
+			resetAutoRefreshTimer();
+			if (!firstConfirm) return;
+
+			const secondConfirm = confirm("🚨 ÚLTIMA ADVERTENCIA: Se eliminará todo el historial de votos permanentemente. ¿Proceder?");
+			resetInactivityTimer();
+			resetAutoRefreshTimer();
+			if (!secondConfirm) return;
+
+			try {
+				await invokeAdmin({ action: "delete_all_events" });
+				showStatus("Todos los registros de eventos fueron eliminados.", "success");
+				await loadTotals();
+			} catch (err) {
+				showStatus(err.message || "Error al eliminar los registros.", "error");
+			}
+		});
+
+		createUserForm.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const email = document.getElementById("newUserEmail").value.trim();
+			const nombre = document.getElementById("newUserName").value.trim();
+			const apellido = document.getElementById("newUserLastName").value.trim();
+			const dni = document.getElementById("newUserDni").value.trim();
+			const password = document.getElementById("newUserPassword").value;
+			const perfil = document.getElementById("newUserProfile").value;
+
+			if (dni && !/^\d{8}$/.test(dni)) {
+				showStatus("El DNI debe tener exactamente 8 dígitos numéricos.", "error");
+				return;
+			}
+
+			try {
+				await invokeAdmin({ action: "create_user", email, nombre, apellido, dni, password, perfil });
+				createUserForm.reset();
+				createUserForm.hidden = true;
+				toggleCreateUserButton.textContent = "Crear Usuario";
+				toggleCreateUserButton.setAttribute("aria-expanded", "false");
+				showStatus("Usuario creado.", "success");
+				await loadUsers();
+			} catch (err) {
+				showStatus(err.message, "error");
+			}
+		});
+
+		document.getElementById("loginForm").addEventListener("submit", async (e) => {
+			e.preventDefault();
+			showStatus("Iniciando sesión…");
+
+			const { error } = await db.auth.signInWithPassword({
+				email: document.getElementById("email").value,
+				password: document.getElementById("password").value
+			});
+
+			if (error) {
+				showStatus("No se pudo iniciar sesión: " + error.message, "error");
+				return;
+			}
+
+			document.getElementById("password").value = "";
+			await loadApp();
+		});
+
+		document.getElementById("logoutButton").addEventListener("click", performLogout);
+
+		document.getElementById("refreshButton").addEventListener("click", async () => {
+			try {
+				await loadTotals();
+				resetAutoRefreshTimer();
+				showStatus("Totales actualizados.", "success");
+			} catch (err) {
+				showStatus(err.message, "error");
+			}
+		});
+
+		document.getElementById("refreshUsersButton").addEventListener("click", async () => {
+			try {
+				await loadUsers();
+				showStatus("Lista de usuarios actualizada.", "success");
+			} catch (err) {
+				showStatus(err.message, "error");
+			}
+		});
+
+
+
+		// --- Recuperación por correo ---\
+		const recoveryPanel = document.getElementById("recoveryPanel");
+
+		// 1. Enviar el correo de recuperación
+		document.getElementById("forgotPasswordLink").addEventListener("click", async (e) => {
+			e.preventDefault();
+			const emailInput = document.getElementById("email");
+			const email = emailInput.value.trim();
+
+			if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+				showStatus("Ingresá tu correo electrónico en el campo de arriba para enviarte el enlace.", "error");
+				emailInput.focus();
+				return;
+			}
+
+			if (!confirm(`¿Enviar enlace de recuperación a ${email}?`)) return;
+
+			showStatus("Enviando correo de recuperación…");
+
+			const { error } = await db.auth.resetPasswordForEmail(email, {
+				redirectTo: window.location.origin,
+			});
+
+			if (error) {
+				showStatus("No se pudo enviar el correo: " + error.message, "error");
+			} else {
+				showStatus("Correo enviado. Revisá tu bandeja de entrada.", "success");
+			}
+		});
+
+		// 2. Detectar cuando el usuario vuelve desde el enlace del correo
+		db.auth.onAuthStateChange((event, session) => {
+			if (event === "PASSWORD_RECOVERY") {
+				stopInactivityTimer();
+				stopAutoRefreshTimer();
+				loginPanel.hidden = true;
+				appPanel.hidden = true;
+				recoveryPanel.hidden = false;
+				showStatus("Ingresá tu nueva contraseña.", "muted");
+			}
+		});
+
+		// 3. Guardar la nueva contraseña en Supabase
+		document.getElementById("recoveryForm").addEventListener("submit", async (e) => {
+			e.preventDefault();
+			const newPassword = document.getElementById("newRecoveryPassword").value;
+
+			if (newPassword.length < 8) {
+				showStatus("La contraseña debe tener al menos 8 caracteres.", "error");
+				return;
+			}
+
+			showStatus("Actualizando contraseña…");
+
+			const { error } = await db.auth.updateUser({ password: newPassword });
+
+			if (error) {
+				showStatus("Error al actualizar la contraseña: " + error.message, "error");
+			} else {
+				document.getElementById("newRecoveryPassword").value = "";
+				recoveryPanel.hidden = true;
+				showStatus("Contraseña actualizada correctamente.", "success");
+				await loadApp();
+			}
+		});
+		// --- Recuperación por correo ---/
+
+
+		// Inicialización al cargar la página
+		loadApp();
+	</script>
 </body>
 </html>
