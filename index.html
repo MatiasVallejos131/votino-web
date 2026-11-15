@@ -347,6 +347,7 @@
 		const loginPanel = document.getElementById("loginPanel");
 		const appPanel = document.getElementById("appPanel");
 		const adminPanel = document.getElementById("adminPanel");
+		const recoveryPanel = document.getElementById("recoveryPanel");
 		const usersBody = document.getElementById("usersBody");
 		const createUserForm = document.getElementById("createUserForm");
 		const toggleCreateUserButton = document.getElementById("toggleCreateUserButton");
@@ -632,6 +633,20 @@
 
 		async function loadApp() {
 			showStatus("");
+
+			// Si estamos en medio del flujo de recuperación de contraseña, mostrar panel de recuperación y salir
+			if (window.location.hash.includes("type=recovery")) {
+				stopInactivityTimer();
+				stopAutoRefreshTimer();
+				currentUserId = null;
+				loginPanel.hidden = true;
+				appPanel.hidden = true;
+				adminPanel.hidden = true;
+				recoveryPanel.hidden = false;
+				showStatus("Ingresá tu nueva contraseña.", "muted");
+				return;
+			}
+
 			const { data: { session } } = await db.auth.getSession();
 
 			if (!session) {
@@ -640,11 +655,13 @@
 				currentUserId = null;
 				loginPanel.hidden = false;
 				appPanel.hidden = true;
+				recoveryPanel.hidden = true;
 				return;
 			}
 
 			currentUserId = session.user.id;
 			loginPanel.hidden = true;
+			recoveryPanel.hidden = true;
 			appPanel.hidden = false;
 
 			startInactivityTimer();
@@ -777,9 +794,7 @@
 
 
 
-		// --- Recuperación por correo ---\
-		const recoveryPanel = document.getElementById("recoveryPanel");
-
+		// --- Recuperación por correo ---
 		// 1. Enviar el correo de recuperación
 		document.getElementById("forgotPasswordLink").addEventListener("click", async (e) => {
 			e.preventDefault();
@@ -814,13 +829,13 @@
 				stopAutoRefreshTimer();
 				loginPanel.hidden = true;
 				appPanel.hidden = true;
+				adminPanel.hidden = true;
 				recoveryPanel.hidden = false;
 				showStatus("Ingresá tu nueva contraseña.", "muted");
 			}
 		});
 
 		// 3. Guardar la nueva contraseña en Supabase
-
 		document.getElementById("recoveryForm").addEventListener("submit", async (e) => {
 		  e.preventDefault();
 		  const newPassword = document.getElementById("newRecoveryPassword").value;
@@ -841,12 +856,11 @@
 			document.getElementById("newRecoveryPassword").value = "";
 			recoveryPanel.hidden = true;
 			showStatus("Contraseña actualizada correctamente.", "success");
+			// Limpiar el hash de recuperación de la URL para evitar bucles al recargar
+			history.replaceState(null, "", window.location.pathname);
 			await loadApp();
 		  }
 		});
-
-		// --- Recuperación por correo ---/
-
 
 		// Inicialización al cargar la página
 		loadApp();
