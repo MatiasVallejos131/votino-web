@@ -76,7 +76,7 @@
       gap: .5rem;
     }
 
-    #totals {
+    #totals, .totals-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: .75rem;
@@ -220,6 +220,174 @@
       margin-top: 0.25rem;
     }
 
+
+    /* ===== Vista porcentajes / más detalles / gráficos ===== */
+    .view-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: .5rem 1rem;
+      margin: .5rem 0 .75rem;
+    }
+
+    .view-row .view-label { font-size: .9rem; font-weight: 600; margin-right: .5rem; }
+
+    .segmented {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .segmented button {
+      margin: 0;
+      border-radius: 0;
+      margin-left: -1px;
+    }
+    .segmented button:first-of-type { border-radius: 6px 0 0 6px; margin-left: 0; }
+    .segmented button:last-of-type { border-radius: 0 6px 6px 0; }
+
+    .segmented button.active,
+    .segmented button.active:hover {
+      background: linear-gradient(to bottom, #3b82f6, #2563eb);
+      color: #fff;
+      border-color: #1d4ed8;
+      box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 1px 3px rgba(0,0,0,.2);
+      position: relative;
+      z-index: 1;
+    }
+
+    button.primary {
+      background: linear-gradient(to bottom, #3b82f6, #2563eb);
+      color: #fff;
+      border-color: #1d4ed8;
+      box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 1px 3px rgba(0,0,0,.2);
+    }
+    button.primary:hover { background: linear-gradient(to bottom, #2f7bf0, #1d4ed8); }
+    button.primary:active { background: linear-gradient(to bottom, #1d4ed8, #2563eb); box-shadow: inset 0 2px 4px rgba(0,0,0,.3); }
+
+    .card .sub {
+      margin-top: .15rem;
+      font-size: .85rem;
+    }
+
+    .total-votes-line { margin: .75rem 0 0; font-size: .9rem; }
+
+    #detailsSection { margin: .5rem 0 0; }
+
+    /* Gráfico de torta: ocupa el espacio libre a la derecha de las líneas de resumen */
+    .summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .summary-text { flex: 1; min-width: 0; }
+    .summary-row .last-vote-info { margin-bottom: 0; }
+    .mini-pie { width: 68px; height: 68px; flex: none; }
+    .mini-pie path, .mini-pie circle { stroke: #fff; stroke-width: 1.5; }
+
+    .details-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: .5rem;
+    }
+    .details-header h2 { margin: 0; }
+
+    .details-block { margin-top: 1.25rem; }
+    .details-block h3 { margin: 0 0 .5rem; font-size: 1.05rem; }
+
+    .totals-grid .card { padding: .6rem .8rem; }
+    .totals-grid .count { font-size: 1.4rem; }
+
+    .balance-line { margin: .6rem 0 0; font-size: .9rem; }
+
+    .chart-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: .75rem 1.25rem;
+    }
+    .chart-controls .field { display: flex; flex-direction: column; }
+    .chart-controls label { margin: 0 0 .2rem; font-size: .9rem; font-weight: 600; }
+    .chart-controls select { padding: .5rem .65rem; }
+
+    .chart-desc { margin: .6rem 0 .25rem; font-size: .9rem; }
+
+    .chips, .balance-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin: .5rem 0;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      margin: 0;
+      padding: .35rem .75rem;
+      border: 1px solid #cbccd1;
+      border-radius: 999px;
+      background: #fff;
+      cursor: pointer;
+      font-size: .9rem;
+      user-select: none;
+    }
+    .chip input { width: auto; max-width: none; margin: 0; padding: 0; }
+    .chip.off { opacity: .55; text-decoration: line-through; background: #f1f3f5; }
+
+    .dot {
+      display: inline-block;
+      width: .8rem;
+      height: .8rem;
+      border-radius: 50%;
+      vertical-align: middle;
+    }
+
+    .legend-item { display: inline-flex; align-items: center; gap: .4rem; font-size: .85rem; margin-right: .75rem; }
+    .legend-item .swatch { width: 1.4rem; height: .3rem; border-radius: 2px; display: inline-block; }
+
+    .chart-host {
+      position: relative;
+      margin-top: .5rem;
+      min-height: 120px;
+      background: #fff;
+      border: 1px solid #e3e5e8;
+      border-radius: 8px;
+    }
+    .chart-host svg { display: block; width: 100%; height: auto; touch-action: pan-y; }
+    .chart-host text { font-family: system-ui, sans-serif; fill: #555; font-size: 11px; }
+    .chart-empty { padding: 2rem 1rem; text-align: center; margin: 0; }
+
+    .chart-tip {
+      position: absolute;
+      display: none;
+      pointer-events: none;
+      padding: .4rem .6rem;
+      font-size: .8rem;
+      line-height: 1.35;
+      background: #fff;
+      border: 1px solid #bbb;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    #chartHint { font-size: .85rem; margin: .5rem 0 0; }
+    #detailsStatus { min-height: 1.2em; margin: .5rem 0 0; font-size: .9rem; }
+
+    @media (max-width: 600px) {
+      .view-row { flex-direction: column; align-items: stretch; }
+      .view-row .segmented { width: 100%; }
+      .view-row .segmented button { flex: 1; }
+      .chart-controls { flex-direction: column; align-items: stretch; }
+      .chart-controls .segmented { width: 100%; }
+      .chart-controls .segmented button { flex: 1; }
+    }
+
     @media (max-width: 600px) {
       .table-wrap { overflow-x: auto; }
       
@@ -305,6 +473,8 @@
       </div>
     </div>
 
+    <!-- VISTA PRINCIPAL -->
+    <div id="mainView">
     <h2>Votos Acumulados</h2>
 
     <!-- FILTRO DE FECHAS -->
@@ -338,24 +508,45 @@
       </div>
     </div>
 
+    <!-- CONTROLES DE VISTA -->
+    <div class="view-row">
+      <div>
+        <span class="view-label">Mostrar:</span>
+        <div class="segmented" role="group" aria-label="Formato de los totales">
+          <button type="button" class="js-mode-btn active" data-mode="count" aria-pressed="true">Cantidades</button>
+          <button type="button" class="js-mode-btn" data-mode="percent" aria-pressed="false">Porcentajes</button>
+        </div>
+      </div>
+      <button id="moreDetailsButton" type="button" class="primary">Más detalles ↓</button>
+    </div>
+
     <div id="totals">
       <div class="card evento-1">
         Positivos
         <div class="count" id="total1">—</div>
+        <div class="sub muted" id="sub1"></div>
       </div>
-    
+
       <div class="card evento-2">
         Neutros
         <div class="count" id="total2">—</div>
+        <div class="sub muted" id="sub2"></div>
       </div>
-    
+
       <div class="card evento-3">
         Negativos
         <div class="count" id="total3">—</div>
+        <div class="sub muted" id="sub3"></div>
       </div>
     </div>
 
-    <p class="last-vote-info muted">Último voto registrado: <strong id="lastVoteTime">—</strong> <span id="lastVoteScope"></span></p>
+    <div class="summary-row">
+      <div class="summary-text">
+        <p class="total-votes-line muted">Total de votos: <strong class="js-total-votes">—</strong></p>
+        <p class="last-vote-info muted">Último voto registrado: <strong id="lastVoteTime">—</strong> <span id="lastVoteScope"></span></p>
+      </div>
+      <svg id="miniPie" class="mini-pie" viewBox="0 0 68 68" role="img" aria-label="Distribución de votos"></svg>
+    </div>
 
     <p></p>
     <div class="refresh-group">
@@ -424,6 +615,105 @@
         </table>
       </div>
     </section>
+    </div>
+    <!-- /VISTA PRINCIPAL -->
+
+    <div id="detailsView" hidden>
+    <!-- VISTA DE DETALLES (pantalla aparte) -->
+    <section id="detailsSection" aria-labelledby="detailsTitle">
+      <div class="details-header">
+        <h2 id="detailsTitle">Más detalles</h2>
+        <button id="backToTotalsButton" type="button">← Volver a los totales</button>
+      </div>
+      <p class="muted">Evolución de los votos a lo largo del tiempo. El período es el mismo que el de la pantalla de totales: si lo cambiás acá, también cambia allá.</p>
+
+      <!-- FILTRO (sincronizado con el de arriba) -->
+      <div class="filter-section">
+        <div>
+          <label for="dateFilterSelect2">Período</label>
+          <select id="dateFilterSelect2">
+            <option value="all" selected>Todos los votos</option>
+            <option value="day">Hoy</option>
+            <option value="week">Esta semana (lun–hoy)</option>
+            <option value="month">Este mes</option>
+            <option value="bimonth">Este bimestre</option>
+            <option value="year">Este año</option>
+            <option value="custom">Rango personalizado</option>
+          </select>
+        </div>
+
+        <div id="customDateRange2" class="custom-range" hidden>
+          <div class="field">
+            <label for="dateFrom2">Desde</label>
+            <input id="dateFrom2" type="date">
+          </div>
+          <div class="field">
+            <label for="dateTo2">Hasta</label>
+            <input id="dateTo2" type="date">
+          </div>
+        </div>
+
+        <button id="applyFilterButton2" type="button">Aplicar filtro</button>
+      </div>
+
+      <!-- RESUMEN -->
+      <div class="details-block">
+        <div class="view-row">
+          <div>
+            <span class="view-label">Mostrar:</span>
+            <div class="segmented" role="group" aria-label="Formato de los totales">
+              <button type="button" class="js-mode-btn active" data-mode="count" aria-pressed="true">Cantidades</button>
+              <button type="button" class="js-mode-btn" data-mode="percent" aria-pressed="false">Porcentajes</button>
+            </div>
+          </div>
+        </div>
+        <div class="totals-grid">
+          <div class="card evento-1">Positivos<div class="count" id="dTotal1">—</div><div class="sub muted" id="dSub1"></div></div>
+          <div class="card evento-2">Neutros<div class="count" id="dTotal2">—</div><div class="sub muted" id="dSub2"></div></div>
+          <div class="card evento-3">Negativos<div class="count" id="dTotal3">—</div><div class="sub muted" id="dSub3"></div></div>
+        </div>
+        <p class="balance-line muted">Total de votos: <strong class="js-total-votes">—</strong> · Saldo (positivos − negativos): <strong id="dBalance">—</strong></p>
+      </div>
+
+      <!-- GRÁFICOS -->
+      <div class="details-block">
+        <h3>Evolución en el tiempo</h3>
+
+        <div class="chart-controls">
+          <div class="field">
+            <label id="chartTypeLabel">Gráfico</label>
+            <div class="segmented" role="group" aria-labelledby="chartTypeLabel">
+              <button type="button" class="js-chart-btn active" data-chart="lines" aria-pressed="true">Votos por intervalo</button>
+              <button type="button" class="js-chart-btn" data-chart="balance" aria-pressed="false">Saldo acumulado</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="intervalSelect">Intervalo</label>
+            <select id="intervalSelect"><option value="auto" selected>Automático</option></select>
+          </div>
+        </div>
+
+        <p class="chart-desc muted" id="chartDesc"></p>
+
+        <div class="chips" id="lineChips" role="group" aria-label="Líneas visibles">
+          <label class="chip"><input type="checkbox" data-line="1" checked><span class="dot" style="background:#81c784"></span>Positivos</label>
+          <label class="chip"><input type="checkbox" data-line="2" checked><span class="dot" style="background:#ffb74d"></span>Neutros</label>
+          <label class="chip"><input type="checkbox" data-line="3" checked><span class="dot" style="background:#e57373"></span>Negativos</label>
+        </div>
+
+        <div class="balance-legend" id="balanceLegend" hidden>
+          <span class="legend-item"><span class="swatch" style="background:#81c784"></span>Crece</span>
+          <span class="legend-item"><span class="swatch" style="background:#ffb74d"></span>Sin cambios</span>
+          <span class="legend-item"><span class="swatch" style="background:#e57373"></span>Decrece</span>
+        </div>
+
+        <div id="chartHost" class="chart-host"><p class="chart-empty muted">Cargando…</p></div>
+        <p id="chartHint" class="muted"></p>
+        <p id="detailsStatus" aria-live="polite"></p>
+      </div>
+    </section>
+
+    </div>
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -557,6 +847,8 @@
     function showStatus(message, kind = "muted") {
       statusEl.textContent = message;
       statusEl.className = kind;
+      const ds = document.getElementById("detailsStatus");
+      if (ds) { ds.textContent = message; ds.className = kind; }
     }
 
     // Formato exacto: dd/mm/aaaa HH:mm
@@ -675,13 +967,10 @@
 
     // --- PROCESAMIENTO Y DATOS DE VOTOS (CON FILTRO) ---
 
-    // Totales robustos: maneja null y undefined
+    // Guarda los totales y los dibuja según el modo (cantidades / porcentajes)
     function displayTotals(totalsObj) {
-      for (const n of [1, 2, 3]) {
-        const v = totalsObj[n];
-        document.getElementById(`total${n}`).textContent =
-          (v === null || v === undefined) ? "—" : String(v);
-      }
+      lastTotals = totalsObj;
+      renderTotals();
     }
 
     // Interpreta la respuesta del RPC total_eventos() (formato flexible)
@@ -802,6 +1091,7 @@
       }
 
       displayTotals(totals);
+      loadSeries(); // gráficos (solo carga si la sección de detalles está a la vista)
 
       if (!recognized) {
         document.getElementById("totalsDetails").textContent =
@@ -882,6 +1172,8 @@
     async function performLogout() {
       stopInactivityTimer();
       stopAutoRefreshTimer();
+      if (window.location.hash === "#detalles") history.replaceState(null, "", window.location.pathname + window.location.search);
+      showView("main");
       const { error } = await db.auth.signOut();
       if (error) showStatus(error.message, "error");
       await loadApp();
@@ -919,6 +1211,7 @@
       loginPanel.hidden = true;
       recoveryPanel.hidden = true;
       appPanel.hidden = false;
+      applyViewFromHash();
 
       startInactivityTimer();
       startAutoRefreshTimer();
@@ -954,30 +1247,38 @@
 
     // --- EVENT LISTENERS ---
 
-    // Filtro de fechas: mostrar/ocultar rango personalizado
-    dateFilterSelect.addEventListener("change", () => {
-      resetInactivityTimer();
-      const isCustom = dateFilterSelect.value === "custom";
-      customDateRange.hidden = !isCustom;
-      if (isCustom) {
-        const today = todayLocalISO();
-        if (!dateFromInput.value) dateFromInput.value = today;
-        if (!dateToInput.value) dateToInput.value = today;
+    // Filtro de fechas (dos copias sincronizadas: sección principal y detalles)
+    const filterUIs = [
+      { select: dateFilterSelect, custom: customDateRange, from: dateFromInput, to: dateToInput, apply: applyFilterButton },
+      {
+        select: document.getElementById("dateFilterSelect2"),
+        custom: document.getElementById("customDateRange2"),
+        from: document.getElementById("dateFrom2"),
+        to: document.getElementById("dateTo2"),
+        apply: document.getElementById("applyFilterButton2")
       }
-    });
+    ];
 
-    // Reiniciar inactividad al editar fechas
-    [dateFromInput, dateToInput].forEach((el) => {
-      el.addEventListener("change", resetInactivityTimer);
-      el.addEventListener("input", resetInactivityTimer);
-    });
+    function onFilterEdited(source) {
+      resetInactivityTimer();
+      if (source.select.value === "custom") {
+        const today = todayLocalISO();
+        if (!source.from.value) source.from.value = today;
+        if (!source.to.value) source.to.value = today;
+      }
+      for (const ui of filterUIs) {
+        ui.select.value = source.select.value;
+        ui.from.value = source.from.value;
+        ui.to.value = source.to.value;
+        ui.custom.hidden = source.select.value !== "custom";
+      }
+    }
 
-    // Aplicar filtro
-    applyFilterButton.addEventListener("click", async () => {
-      const type = dateFilterSelect.value;
+    async function applyFilter(ui) {
+      const type = ui.select.value;
       if (type === "custom") {
-        const from = dateFromInput.value;
-        const to = dateToInput.value;
+        const from = ui.from.value;
+        const to = ui.to.value;
         if (!from || !to) {
           showStatus("Seleccioná ambas fechas para el rango personalizado.", "error");
           return;
@@ -994,7 +1295,16 @@
       } catch (err) {
         showStatus(err.message || "Error al aplicar filtro.", "error");
       }
-    });
+    }
+
+    for (const ui of filterUIs) {
+      ui.select.addEventListener("change", () => onFilterEdited(ui));
+      [ui.from, ui.to].forEach((el) => {
+        el.addEventListener("change", () => onFilterEdited(ui));
+        el.addEventListener("input", () => onFilterEdited(ui));
+      });
+      ui.apply.addEventListener("click", () => applyFilter(ui));
+    }
 
     toggleCreateUserButton.addEventListener("click", () => {
       const opening = createUserForm.hidden;
@@ -1159,6 +1469,561 @@
     });
     // --- Recuperación por correo ---/
 
+
+    // =====================================================================
+    // VISTA DE PORCENTAJES, SECCIÓN "MÁS DETALLES" Y GRÁFICOS
+    // =====================================================================
+
+    const VOTE_META = {
+      1: { name: "Positivos", color: "#81c784" },
+      2: { name: "Neutros",   color: "#ffb74d" },
+      3: { name: "Negativos", color: "#e57373" }
+    };
+    const COLOR_UP = VOTE_META[1].color;    // saldo crece
+    const COLOR_FLAT = VOTE_META[2].color;  // sin cambios
+    const COLOR_DOWN = VOTE_META[3].color;  // saldo decrece
+
+    // Intervalos disponibles para agrupar votos
+    const STEPS = [
+      { ms: 10e3,        label: "10 segundos" },
+      { ms: 60e3,        label: "1 minuto" },
+      { ms: 5 * 60e3,    label: "5 minutos" },
+      { ms: 15 * 60e3,   label: "15 minutos" },
+      { ms: 30 * 60e3,   label: "30 minutos" },
+      { ms: 3600e3,      label: "1 hora" },
+      { ms: 3 * 3600e3,  label: "3 horas" },
+      { ms: 6 * 3600e3,  label: "6 horas" },
+      { ms: 12 * 3600e3, label: "12 horas" },
+      { ms: 864e5,       label: "1 día" },
+      { ms: 7 * 864e5,   label: "1 semana" },
+      { ms: 30 * 864e5,  label: "30 días" }
+    ];
+    const TARGET_BUCKETS = 48;
+    const MAX_BUCKETS = 400;
+    const MAX_ROWS = 50000;
+
+    let displayMode = "count";   // "count" | "percent"
+    let lastTotals = null;
+    let chartMode = "lines";     // "lines" | "balance"
+    const visibleLines = { 1: true, 2: true, 3: true };
+
+    let seriesRows = [];
+    let seriesRange = { tMin: null, tMax: null };
+    let seriesLoaded = false;
+    let seriesTruncated = false;
+    let detailsVisible = false;
+    let detailsStale = true;
+    let seriesRequestId = 0;
+
+    const detailsSection = document.getElementById("detailsSection");
+    const chartHost = document.getElementById("chartHost");
+    const chartHint = document.getElementById("chartHint");
+    const chartDesc = document.getElementById("chartDesc");
+    const lineChips = document.getElementById("lineChips");
+    const balanceLegend = document.getElementById("balanceLegend");
+    const intervalSelect = document.getElementById("intervalSelect");
+
+    // ---------- Formato ----------
+    const fmtNumber = (n) => Number(n).toLocaleString("es-AR");
+    const fmtPercent = (p) => p.toLocaleString("es-AR", { maximumFractionDigits: 1 }) + "%";
+    const pad2 = (n) => String(n).padStart(2, "0");
+
+    function fmtFull(t, withSeconds = false) {
+      const d = new Date(t);
+      const base = `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+      return withSeconds ? `${base}:${pad2(d.getSeconds())}` : base;
+    }
+
+    function fmtTick(t, span) {
+      const d = new Date(t);
+      const hm = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+      const dm = `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}`;
+      if (span <= 20 * 60e3) return `${hm}:${pad2(d.getSeconds())}`;
+      if (span <= 36 * 3600e3) return hm;
+      if (span <= 7 * 864e5) return `${dm} ${hm}`;
+      if (span <= 400 * 864e5) return dm;
+      return `${dm}/${String(d.getFullYear()).slice(2)}`;
+    }
+
+    function fmtRange(start, end, withSeconds) {
+      const a = new Date(start), b = new Date(end);
+      const sameDay = a.toDateString() === b.toDateString();
+      const timeOnly = (d) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}` + (withSeconds ? `:${pad2(d.getSeconds())}` : "");
+      return sameDay
+        ? `${fmtFull(start, false).slice(0, 10)} ${timeOnly(a)} – ${timeOnly(b)}`
+        : `${fmtFull(start, withSeconds)} – ${fmtFull(end, withSeconds)}`;
+    }
+
+    // ---------- Totales: cantidades / porcentajes ----------
+    function renderTotals() {
+      const t = lastTotals;
+      const vals = {};
+      let sum = 0;
+      for (const n of [1, 2, 3]) {
+        const v = t ? t[n] : null;
+        vals[n] = (v === null || v === undefined) ? null : Number(v);
+        if (vals[n] !== null) sum += vals[n];
+      }
+
+      const percentMode = displayMode === "percent";
+
+      for (const n of [1, 2, 3]) {
+        const v = vals[n];
+        const countTxt = v === null ? "—" : fmtNumber(v);
+        const pctTxt = v === null ? "—" : (sum > 0 ? fmtPercent(v / sum * 100) : "0%");
+        const main = percentMode ? pctTxt : countTxt;
+        const sub = v === null ? "" : (percentMode ? `${countTxt} ${v === 1 ? "voto" : "votos"}` : `${pctTxt} del total`);
+
+        for (const [mainId, subId] of [[`total${n}`, `sub${n}`], [`dTotal${n}`, `dSub${n}`]]) {
+          document.getElementById(mainId).textContent = main;
+          document.getElementById(subId).textContent = sub;
+        }
+      }
+
+      renderPie(vals, sum);
+
+      const totalTxt = t ? fmtNumber(sum) : "—";
+      document.querySelectorAll(".js-total-votes").forEach((el) => { el.textContent = totalTxt; });
+
+      const balEl = document.getElementById("dBalance");
+      if (vals[1] === null || vals[3] === null) {
+        balEl.textContent = "—";
+      } else {
+        const bal = vals[1] - vals[3];
+        balEl.textContent = (bal > 0 ? "+" : "") + fmtNumber(bal);
+      }
+    }
+
+    // Torta pequeña de la vista principal (proporción de cada tipo de voto)
+    function renderPie(vals, sum) {
+      const el = document.getElementById("miniPie");
+      const C = 34, R = 32;
+      if (!sum) {
+        el.innerHTML = `<circle cx="${C}" cy="${C}" r="${R}" fill="#e3e5e8"><title>Sin votos para mostrar</title></circle>`;
+        el.setAttribute("aria-label", "Sin votos para mostrar");
+        return;
+      }
+      const parts = [1, 2, 3].filter((n) => vals[n] > 0);
+      const label = (n) => `${VOTE_META[n].name}: ${fmtNumber(vals[n])} (${fmtPercent(vals[n] / sum * 100)})`;
+      let html = "";
+      let a0 = -Math.PI / 2;
+      for (const n of parts) {
+        const color = VOTE_META[n].color;
+        if (parts.length === 1) {
+          html += `<circle cx="${C}" cy="${C}" r="${R}" fill="${color}"><title>${label(n)}</title></circle>`;
+          break;
+        }
+        const frac = vals[n] / sum;
+        const a1 = a0 + frac * 2 * Math.PI;
+        const x0 = (C + R * Math.cos(a0)).toFixed(2), y0 = (C + R * Math.sin(a0)).toFixed(2);
+        const x1 = (C + R * Math.cos(a1)).toFixed(2), y1 = (C + R * Math.sin(a1)).toFixed(2);
+        html += `<path d="M${C} ${C} L${x0} ${y0} A${R} ${R} 0 ${frac > 0.5 ? 1 : 0} 1 ${x1} ${y1} Z" fill="${color}"><title>${label(n)}</title></path>`;
+        a0 = a1;
+      }
+      el.innerHTML = html;
+      el.setAttribute("aria-label", "Distribución de votos: " + parts.map(label).join(", "));
+    }
+
+    function setDisplayMode(mode) {
+      displayMode = mode;
+      document.querySelectorAll(".js-mode-btn").forEach((b) => {
+        const active = b.dataset.mode === mode;
+        b.classList.toggle("active", active);
+        b.setAttribute("aria-pressed", String(active));
+      });
+      renderTotals();
+      renderCharts(); // el tooltip también refleja el formato
+    }
+
+    document.querySelectorAll(".js-mode-btn").forEach((b) => {
+      b.addEventListener("click", () => setDisplayMode(b.dataset.mode));
+    });
+
+    // ---------- Navegación entre la vista principal y la de detalles ----------
+    const mainView = document.getElementById("mainView");
+    const detailsView = document.getElementById("detailsView");
+    const DETAILS_HASH = "#detalles";
+
+    function showView(view) {
+      const isDetails = view === "details";
+      mainView.hidden = isDetails;
+      detailsView.hidden = !isDetails;
+      detailsVisible = isDetails;
+      window.scrollTo({ top: 0 });
+      if (isDetails) {
+        renderCharts();                 // ya con la vista visible, para medir bien el ancho
+        if (detailsStale) loadSeries();
+      }
+    }
+
+    function applyViewFromHash() {
+      showView(window.location.hash === DETAILS_HASH ? "details" : "main");
+    }
+
+    document.getElementById("moreDetailsButton").addEventListener("click", () => {
+      window.location.hash = DETAILS_HASH;   // también permite usar el botón "atrás" del navegador
+    });
+    document.getElementById("backToTotalsButton").addEventListener("click", () => {
+      history.pushState(null, "", window.location.pathname + window.location.search);
+      showView("main");
+    });
+    window.addEventListener("hashchange", applyViewFromHash);
+    window.addEventListener("popstate", applyViewFromHash);
+
+    // ---------- Datos de la serie temporal ----------
+    async function fetchAllEvents(from, to) {
+      const PAGE = 1000;
+      const rows = [];
+      for (let start = 0; start < MAX_ROWS; start += PAGE) {
+        let q = db.from("eventos").select("timestamp,evento")
+          .order("timestamp", { ascending: true })
+          .order("evento", { ascending: true })
+          .range(start, start + PAGE - 1);
+        if (from) q = q.gte("timestamp", from);
+        if (to) q = q.lte("timestamp", to);
+        const { data, error } = await q;
+        if (error) throw error;
+        rows.push(...(data || []));
+        if (!data || data.length < PAGE) return { rows, truncated: false };
+      }
+      return { rows, truncated: true };
+    }
+
+    async function loadSeries() {
+      if (!detailsVisible) { detailsStale = true; return; }
+      detailsStale = false;
+
+      const { from, to, invalid } = getDateRangeFromFilter(activeDateFilter);
+      if (invalid) {
+        chartHost.innerHTML = '<p class="chart-empty error">El rango de fechas no es válido (desde &gt; hasta).</p>';
+        return;
+      }
+
+      const myId = ++seriesRequestId;
+      if (!seriesLoaded) chartHost.innerHTML = '<p class="chart-empty muted">Cargando…</p>';
+
+      try {
+        const { rows, truncated } = await fetchAllEvents(from, to);
+        if (myId !== seriesRequestId) return; // llegó una consulta más nueva
+
+        seriesRows = rows
+          .map((r) => ({ t: new Date(r.timestamp).getTime(), e: Number(r.evento) }))
+          .filter((r) => Number.isFinite(r.t) && [1, 2, 3].includes(r.e));
+        seriesTruncated = truncated;
+
+        let tMin = null, tMax = null;
+        if (from) {
+          // El eje X coincide con el filtro (el final se recorta a "ahora")
+          tMin = new Date(from).getTime();
+          const filterEnd = new Date(to).getTime();
+          tMax = Math.min(filterEnd, Date.now());
+          if (tMax <= tMin) tMax = filterEnd;
+        } else if (seriesRows.length) {
+          // "Todos los votos": del primer al último voto
+          tMin = seriesRows[0].t;
+          tMax = seriesRows[seriesRows.length - 1].t;
+        }
+        seriesRange = { tMin, tMax };
+        seriesLoaded = true;
+        renderCharts();
+      } catch (err) {
+        if (myId !== seriesRequestId) return;
+        chartHost.innerHTML = `<p class="chart-empty error">No se pudo cargar el gráfico: ${(err && err.message) ? err.message.replace(/</g, "&lt;") : "error desconocido"}</p>`;
+      }
+    }
+
+    // ---------- Agrupación en intervalos ----------
+    function chooseStep(span, choice) {
+      let step = choice === "auto"
+        ? (STEPS.find((s) => span / s.ms <= TARGET_BUCKETS) || STEPS[STEPS.length - 1]).ms
+        : Number(choice);
+      let adjusted = false;
+      if (span / step > MAX_BUCKETS) {
+        step = (STEPS.find((s) => span / s.ms <= MAX_BUCKETS) || STEPS[STEPS.length - 1]).ms;
+        adjusted = true;
+      }
+      return { step, adjusted };
+    }
+
+    function stepLabel(ms) {
+      const s = STEPS.find((x) => x.ms === ms);
+      return s ? s.label : `${Math.round(ms / 1000)} s`;
+    }
+
+    function bucketize(rows, tMin, tMax, step) {
+      const n = Math.max(1, Math.ceil((tMax - tMin) / step));
+      const buckets = Array.from({ length: n }, (_, i) => ({
+        start: tMin + i * step,
+        end: Math.min(tMin + (i + 1) * step, tMax),
+        c: { 1: 0, 2: 0, 3: 0 }
+      }));
+      for (const r of rows) {
+        if (r.t < tMin || r.t > tMax) continue;
+        let i = Math.floor((r.t - tMin) / step);
+        if (i >= n) i = n - 1;
+        buckets[i].c[r.e] += 1;
+      }
+      return buckets;
+    }
+
+    // ---------- Render de gráficos ----------
+    function renderCharts() {
+      const lines = chartMode === "lines";
+      lineChips.hidden = !lines;
+      balanceLegend.hidden = lines;
+      chartDesc.textContent = lines
+        ? "Cantidad de votos de cada tipo en cada intervalo de tiempo. Tocá los botones de color para ocultar o mostrar líneas."
+        : "Saldo acumulado (positivos − negativos). La línea sube con cada voto positivo neto, baja con cada negativo neto y los neutros no lo modifican.";
+
+      if (!seriesLoaded) return;
+
+      if (!seriesRows.length || seriesRange.tMin === null) {
+        chartHost.innerHTML = '<p class="chart-empty muted">No hay votos en el período seleccionado.</p>';
+        chartHint.textContent = "";
+        return;
+      }
+
+      let { tMin, tMax } = seriesRange;
+      if (tMax - tMin < 60e3) tMax = tMin + 60e3;
+      const span = tMax - tMin;
+
+      const { step, adjusted } = chooseStep(span, intervalSelect.value);
+      const buckets = bucketize(seriesRows, tMin, tMax, step);
+      const withSec = step < 60e3;
+
+      chartHint.textContent =
+        `Período: ${fmtFull(tMin)} → ${fmtFull(tMax)} · Intervalos de ${stepLabel(step)} (${buckets.length} en total)` +
+        (adjusted ? " · intervalo ajustado automáticamente para que el gráfico sea legible" : "") +
+        (seriesTruncated ? ` · se muestran solo los primeros ${fmtNumber(MAX_ROWS)} votos del período` : "");
+
+      const share = (v, tot) => (tot > 0 ? fmtPercent(v / tot * 100) : "0%");
+      const percentMode = displayMode === "percent";
+
+      if (lines) {
+        const ids = [1, 2, 3].filter((n) => visibleLines[n]);
+        if (!ids.length) {
+          chartHost.innerHTML = '<p class="chart-empty muted">Activá al menos una línea para ver el gráfico.</p>';
+          return;
+        }
+        const series = ids.map((n) => ({
+          id: n,
+          name: VOTE_META[n].name,
+          color: VOTE_META[n].color,
+          points: buckets.map((b) => ({ t: (b.start + b.end) / 2, v: b.c[n] }))
+        }));
+        drawChart(chartHost, {
+          tMin, tMax, span, series, yAxisTitle: "Votos",
+          tooltip: (i) => {
+            const b = buckets[i];
+            const tot = b.c[1] + b.c[2] + b.c[3];
+            let h = `<strong>${fmtRange(b.start, b.end, withSec)}</strong>`;
+            for (const n of ids) {
+              const main = percentMode ? share(b.c[n], tot) : fmtNumber(b.c[n]);
+              const other = percentMode ? `${fmtNumber(b.c[n])}` : share(b.c[n], tot);
+              h += `<div><span class="dot" style="background:${VOTE_META[n].color}"></span> ${VOTE_META[n].name}: <strong>${main}</strong> <span class="muted">(${other})</span></div>`;
+            }
+            h += `<div class="muted">Total del intervalo: ${fmtNumber(tot)}</div>`;
+            return h;
+          }
+        });
+      } else {
+        let cum = 0;
+        const points = [{ t: tMin, v: 0 }];
+        buckets.forEach((b) => {
+          cum += b.c[1] - b.c[3];
+          points.push({ t: b.end, v: cum });
+        });
+        const segColor = (i) => {
+          const d = points[i].v - points[i - 1].v;
+          return d > 0 ? COLOR_UP : d < 0 ? COLOR_DOWN : COLOR_FLAT;
+        };
+        drawChart(chartHost, {
+          tMin, tMax, span, yAxisTitle: "Saldo",
+          series: [{ id: "balance", name: "Saldo", color: "#5f6368", points, segmentColor: segColor }],
+          tooltip: (i) => {
+            const p = points[i];
+            if (i === 0) return `<strong>${fmtFull(p.t, withSec)}</strong><div>Inicio del período: saldo <strong>0</strong></div>`;
+            const b = buckets[i - 1];
+            const d = p.v - points[i - 1].v;
+            const color = d > 0 ? COLOR_UP : d < 0 ? COLOR_DOWN : COLOR_FLAT;
+            const dTxt = (d > 0 ? "+" : "") + fmtNumber(d);
+            return `<strong>${fmtRange(b.start, b.end, withSec)}</strong>` +
+              `<div>Saldo al final: <strong>${(p.v > 0 ? "+" : "") + fmtNumber(p.v)}</strong></div>` +
+              `<div><span class="dot" style="background:${color}"></span> Variación: <strong>${dTxt}</strong></div>` +
+              `<div class="muted">En el intervalo: ${fmtNumber(b.c[1])} pos. · ${fmtNumber(b.c[2])} neu. · ${fmtNumber(b.c[3])} neg.</div>`;
+          }
+        });
+      }
+    }
+
+    function niceTicks(lo, hi, target = 5) {
+      if (hi === lo) hi = lo + 1;
+      const raw = (hi - lo) / target;
+      const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+      const norm = raw / mag;
+      let step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10) * mag;
+      if (step < 1) step = 1; // los votos son enteros
+      const start = Math.floor(lo / step) * step;
+      const end = Math.ceil(hi / step) * step;
+      const ticks = [];
+      for (let v = start; v <= end + step / 2; v += step) ticks.push(v);
+      return ticks;
+    }
+
+    // Dibuja un gráfico de líneas en SVG con hover/touch
+    function drawChart(host, cfg) {
+      const { tMin, tMax, span, series, tooltip } = cfg;
+      const W = Math.max(280, Math.round(host.clientWidth || 600));
+      const H = W < 520 ? 290 : 350;
+      const m = { l: 48, r: 18, t: 14, b: 34 };
+      const iw = W - m.l - m.r;
+      const ih = H - m.t - m.b;
+
+      const allVals = series.flatMap((s) => s.points.map((p) => p.v));
+      const lo = Math.min(0, ...allVals);
+      const hi = Math.max(0, ...allVals);
+      const yTicks = niceTicks(lo, hi, 5);
+      const yLo = yTicks[0];
+      const yHi = yTicks[yTicks.length - 1];
+
+      const x = (t) => m.l + ((t - tMin) / span) * iw;
+      const y = (v) => m.t + ih - ((v - yLo) / (yHi - yLo)) * ih;
+
+      let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${chartMode === "lines" ? "Gráfico de votos por intervalo" : "Gráfico de saldo acumulado"}">`;
+
+      // Grilla horizontal + etiquetas Y
+      for (const v of yTicks) {
+        const yy = y(v).toFixed(1);
+        const isZero = v === 0 && yLo < 0;
+        svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${yy}" y2="${yy}" stroke="${isZero ? "#9aa0a6" : "#e6e8eb"}" stroke-width="${isZero ? 1.5 : 1}"/>`;
+        svg += `<text x="${m.l - 6}" y="${(+yy + 4).toFixed(1)}" text-anchor="end">${fmtNumber(v)}</text>`;
+      }
+
+      // Etiquetas X
+      const nX = W < 520 ? 4 : 6;
+      for (let k = 0; k <= nX; k++) {
+        const t = tMin + (span * k) / nX;
+        const xx = x(t).toFixed(1);
+        const anchor = k === 0 ? "start" : k === nX ? "end" : "middle";
+        svg += `<line x1="${xx}" x2="${xx}" y1="${m.t + ih}" y2="${m.t + ih + 4}" stroke="#9aa0a6"/>`;
+        svg += `<text x="${xx}" y="${m.t + ih + 18}" text-anchor="${anchor}">${fmtTick(t, span)}</text>`;
+      }
+      svg += `<line x1="${m.l}" x2="${m.l}" y1="${m.t}" y2="${m.t + ih}" stroke="#9aa0a6"/>`;
+      svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${m.t + ih}" y2="${m.t + ih}" stroke="#9aa0a6"/>`;
+
+      // Líneas
+      for (const s of series) {
+        const pts = s.points;
+        if (s.segmentColor) {
+          for (let i = 1; i < pts.length; i++) {
+            svg += `<line x1="${x(pts[i - 1].t).toFixed(1)}" y1="${y(pts[i - 1].v).toFixed(1)}" x2="${x(pts[i].t).toFixed(1)}" y2="${y(pts[i].v).toFixed(1)}" stroke="${s.segmentColor(i)}" stroke-width="3" stroke-linecap="round"/>`;
+          }
+        } else {
+          svg += `<polyline fill="none" stroke="${s.color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="${pts.map((p) => `${x(p.t).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ")}"/>`;
+        }
+        if (pts.length <= 60) {
+          pts.forEach((p, i) => {
+            const c = s.segmentColor ? (i === 0 ? "#9aa0a6" : s.segmentColor(i)) : s.color;
+            svg += `<circle cx="${x(p.t).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="3" fill="${c}"/>`;
+          });
+        }
+      }
+
+      // Capa de interacción
+      svg += `<line class="cross" y1="${m.t}" y2="${m.t + ih}" stroke="#555" stroke-dasharray="4 3" style="display:none"/>`;
+      svg += `<g class="hover-dots"></g>`;
+      svg += `<rect class="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/>`;
+      svg += `</svg><div class="chart-tip"></div>`;
+
+      host.innerHTML = svg;
+
+      const svgEl = host.querySelector("svg");
+      const tip = host.querySelector(".chart-tip");
+      const cross = host.querySelector(".cross");
+      const dotsG = host.querySelector(".hover-dots");
+      const refPoints = series[0].points;
+
+      function hide() {
+        tip.style.display = "none";
+        cross.style.display = "none";
+        dotsG.innerHTML = "";
+      }
+
+      function onMove(ev) {
+        const rect = svgEl.getBoundingClientRect();
+        const px = (ev.clientX - rect.left) * (W / rect.width);
+        let best = 0, bestD = Infinity;
+        for (let i = 0; i < refPoints.length; i++) {
+          const d = Math.abs(x(refPoints[i].t) - px);
+          if (d < bestD) { bestD = d; best = i; }
+        }
+        const cx = x(refPoints[best].t);
+        cross.setAttribute("x1", cx);
+        cross.setAttribute("x2", cx);
+        cross.style.display = "";
+
+        dotsG.innerHTML = series.map((s) => {
+          const c = s.segmentColor ? (best === 0 ? "#9aa0a6" : s.segmentColor(best)) : s.color;
+          return `<circle cx="${cx.toFixed(1)}" cy="${y(s.points[best].v).toFixed(1)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+        }).join("");
+
+        tip.innerHTML = tooltip(best);
+        tip.style.display = "block";
+        const scale = rect.width / W;
+        const left = cx * scale;
+        const tw = tip.offsetWidth;
+        tip.style.left = (left > rect.width / 2 ? Math.max(4, left - tw - 12) : Math.min(rect.width - tw - 4, left + 12)) + "px";
+        tip.style.top = (m.t * scale + 6) + "px";
+      }
+
+      svgEl.addEventListener("pointermove", onMove);
+      svgEl.addEventListener("pointerdown", onMove);
+      svgEl.addEventListener("pointerleave", hide);
+    }
+
+    // ---------- Controles de los gráficos ----------
+    for (const s of STEPS) {
+      const opt = document.createElement("option");
+      opt.value = String(s.ms);
+      opt.textContent = s.label;
+      intervalSelect.append(opt);
+    }
+    intervalSelect.addEventListener("change", () => { resetInactivityTimer(); renderCharts(); });
+
+    document.querySelectorAll(".js-chart-btn").forEach((b) => {
+      b.addEventListener("click", () => {
+        chartMode = b.dataset.chart;
+        document.querySelectorAll(".js-chart-btn").forEach((x) => {
+          const active = x === b;
+          x.classList.toggle("active", active);
+          x.setAttribute("aria-pressed", String(active));
+        });
+        renderCharts();
+      });
+    });
+
+    lineChips.querySelectorAll("input[data-line]").forEach((cb) => {
+      cb.addEventListener("change", () => {
+        resetInactivityTimer();
+        visibleLines[cb.dataset.line] = cb.checked;
+        cb.closest(".chip").classList.toggle("off", !cb.checked);
+        renderCharts();
+      });
+    });
+
+    // Redibujar al cambiar el ancho disponible
+    if ("ResizeObserver" in window) {
+      let lastW = 0, raf = null;
+      new ResizeObserver(() => {
+        const w = Math.round(chartHost.clientWidth);
+        if (!w || Math.abs(w - lastW) < 2) return;
+        lastW = w;
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(renderCharts);
+      }).observe(chartHost);
+    }
+
+    renderCharts();
 
     // Inicialización al cargar la página
     loadApp();
