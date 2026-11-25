@@ -274,17 +274,48 @@
 
     #detailsSection { margin: .5rem 0 0; }
 
-    /* Gráfico de torta: ocupa el espacio libre a la derecha de las líneas de resumen */
-    .summary-row {
-      display: flex;
+    /* ===== Resumen principal: torta grande + tarjetas compactas ===== */
+    .overview {
+      display: grid;
+      grid-template-columns: minmax(200px, 260px) 1fr;
+      gap: 1.25rem;
       align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+      margin: .5rem 0 .25rem;
     }
-    .summary-text { flex: 1; min-width: 0; }
-    .summary-row .last-vote-info { margin-bottom: 0; }
-    .mini-pie { width: 68px; height: 68px; flex: none; }
-    .mini-pie path, .mini-pie circle { stroke: #fff; stroke-width: 1.5; }
+    .pie-box { display: flex; justify-content: center; }
+    .vote-pie { width: 100%; max-width: 260px; height: auto; overflow: visible; }
+    .pie-slice {
+      cursor: pointer;
+      transition: opacity .15s ease, transform .15s ease;
+      transform-origin: 110px 110px;
+      stroke: #fff;
+      stroke-width: 2;
+    }
+    .pie-slice:focus { outline: none; }
+    .vote-pie.has-hover .pie-slice:not(.hot) { opacity: .4; }
+    .pie-slice.hot { transform: scale(1.04); }
+    .pie-pct { font: 700 13px system-ui, sans-serif; fill: #202124; pointer-events: none; }
+    .pie-center-main { font: 700 30px system-ui, sans-serif; fill: #202124; pointer-events: none; }
+    .pie-center-sub { font: 12.5px system-ui, sans-serif; fill: #555; pointer-events: none; }
+
+    .overview #totals { grid-template-columns: 1fr; gap: .4rem; }
+    .overview #totals .card {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: baseline;
+      column-gap: .6rem;
+      padding: .35rem .75rem;
+      font-size: .9rem;
+      border-left-width: 6px;
+    }
+    .overview #totals .count { font-size: 1.05rem; }
+    .overview #totals .sub { font-size: .78rem; margin: 0; min-width: 5.5em; text-align: right; }
+    .overview-side .total-votes-line { margin: .6rem 0 0; }
+    .overview-side .last-vote-info { margin: .2rem 0 0; }
+
+    .view-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .view-actions button { margin: 0; }
+    .back-row { margin-bottom: .5rem; }
 
     .details-header {
       display: flex;
@@ -382,6 +413,8 @@
     @media (max-width: 600px) {
       .view-row { flex-direction: column; align-items: stretch; }
       .view-row .segmented { width: 100%; }
+      .view-actions button { flex: 1; }
+      .overview { grid-template-columns: 1fr; }
       .view-row .segmented button { flex: 1; }
       .chart-controls { flex-direction: column; align-items: stretch; }
       .chart-controls .segmented { width: 100%; }
@@ -517,35 +550,39 @@
           <button type="button" class="js-mode-btn" data-mode="percent" aria-pressed="false">Porcentajes</button>
         </div>
       </div>
-      <button id="moreDetailsButton" type="button" class="primary">Más detalles ↓</button>
-    </div>
-
-    <div id="totals">
-      <div class="card evento-1">
-        Positivos
-        <div class="count" id="total1">—</div>
-        <div class="sub muted" id="sub1"></div>
-      </div>
-
-      <div class="card evento-2">
-        Neutros
-        <div class="count" id="total2">—</div>
-        <div class="sub muted" id="sub2"></div>
-      </div>
-
-      <div class="card evento-3">
-        Negativos
-        <div class="count" id="total3">—</div>
-        <div class="sub muted" id="sub3"></div>
+      <div class="view-actions">
+        <button id="manageUsersButton" type="button" hidden>Administrar usuarios</button>
+        <button id="moreDetailsButton" type="button" class="primary">Más detalles ↓</button>
       </div>
     </div>
 
-    <div class="summary-row">
-      <div class="summary-text">
+    <div class="overview">
+      <div class="pie-box">
+        <svg id="votePie" class="vote-pie" viewBox="0 0 220 220" role="img" aria-label="Distribución de votos"></svg>
+      </div>
+      <div class="overview-side">
+  <div id="totals">
+          <div class="card evento-1">
+            Positivos
+            <div class="count" id="total1">—</div>
+            <div class="sub muted" id="sub1"></div>
+          </div>
+  
+          <div class="card evento-2">
+            Neutros
+            <div class="count" id="total2">—</div>
+            <div class="sub muted" id="sub2"></div>
+          </div>
+  
+          <div class="card evento-3">
+            Negativos
+            <div class="count" id="total3">—</div>
+            <div class="sub muted" id="sub3"></div>
+          </div>
+        </div>
         <p class="total-votes-line muted">Total de votos: <strong class="js-total-votes">—</strong></p>
         <p class="last-vote-info muted">Último voto registrado: <strong id="lastVoteTime">—</strong> <span id="lastVoteScope"></span></p>
       </div>
-      <svg id="miniPie" class="mini-pie" viewBox="0 0 68 68" role="img" aria-label="Distribución de votos"></svg>
     </div>
 
     <p></p>
@@ -561,60 +598,6 @@
     </div>
     <pre id="totalsDetails" class="muted"></pre>
 
-    <!-- SECCIÓN ADMINISTRATIVA -->
-    <section id="adminPanel" hidden>
-      <h2>Administración de usuarios</h2>
-
-      <div class="admin-actions">
-        <button id="refreshUsersButton" type="button">Actualizar lista</button>
-        <button id="toggleCreateUserButton" type="button" aria-expanded="false" aria-controls="createUserForm">
-          Crear Usuario
-        </button>
-      </div>
-
-      <form id="createUserForm" hidden>
-        <h3>Nuevo usuario</h3>
-
-        <label for="newUserEmail">Correo electrónico</label>
-        <input id="newUserEmail" type="email" autocomplete="email" required>
-
-        <label for="newUserName">Nombre</label>
-        <input id="newUserName" type="text" maxlength="30" placeholder="Ej. Juan">
-
-        <label for="newUserLastName">Apellido</label>
-        <input id="newUserLastName" type="text" maxlength="30" placeholder="Ej. Pérez">
-
-        <label for="newUserDni">DNI (8 dígitos)</label>
-        <input id="newUserDni" type="text" maxlength="8" pattern="\d{8}" placeholder="Ej. 12345678">
-
-        <label for="newUserPassword">Contraseña inicial (mínimo 8 caracteres)</label>
-        <input id="newUserPassword" type="password" autocomplete="new-password" minlength="8" required>
-
-        <label for="newUserProfile">Perfil</label>
-        <select id="newUserProfile">
-          <option value="consulta">Consulta</option>
-          <option value="admin">Administrador</option>
-        </select>
-
-        <button type="submit">Guardar usuario</button>
-      </form>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre y Apellido</th>
-              <th>DNI</th>
-              <th>Correo</th>
-              <th>Perfil</th>
-              <th>Último ingreso</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="usersBody"></tbody>
-        </table>
-      </div>
-    </section>
     </div>
     <!-- /VISTA PRINCIPAL -->
 
@@ -625,7 +608,7 @@
         <h2 id="detailsTitle">Más detalles</h2>
         <button id="backToTotalsButton" type="button">← Volver a los totales</button>
       </div>
-      <p class="muted">Evolución de los votos a lo largo del tiempo.</p>
+      <p class="muted">Evolución de los votos a lo largo del tiempo. El período es el mismo que el de la pantalla de totales: si lo cambiás acá, también cambia allá.</p>
 
       <!-- FILTRO (sincronizado con el de arriba) -->
       <div class="filter-section">
@@ -713,6 +696,67 @@
       </div>
     </section>
 
+    </div>
+
+    <!-- VISTA DE ADMINISTRACIÓN DE USUARIOS (pantalla aparte, solo administradores) -->
+    <div id="adminView" hidden>
+      <div class="back-row">
+        <button id="backFromAdminButton" type="button">← Volver a los totales</button>
+      </div>
+    <!-- SECCIÓN ADMINISTRATIVA -->
+    <section id="adminPanel" hidden>
+      <h2>Administración de usuarios</h2>
+
+      <div class="admin-actions">
+        <button id="refreshUsersButton" type="button">Actualizar lista</button>
+        <button id="toggleCreateUserButton" type="button" aria-expanded="false" aria-controls="createUserForm">
+          Crear Usuario
+        </button>
+      </div>
+
+      <form id="createUserForm" hidden>
+        <h3>Nuevo usuario</h3>
+
+        <label for="newUserEmail">Correo electrónico</label>
+        <input id="newUserEmail" type="email" autocomplete="email" required>
+
+        <label for="newUserName">Nombre</label>
+        <input id="newUserName" type="text" maxlength="30" placeholder="Ej. Juan">
+
+        <label for="newUserLastName">Apellido</label>
+        <input id="newUserLastName" type="text" maxlength="30" placeholder="Ej. Pérez">
+
+        <label for="newUserDni">DNI (8 dígitos)</label>
+        <input id="newUserDni" type="text" maxlength="8" pattern="\d{8}" placeholder="Ej. 12345678">
+
+        <label for="newUserPassword">Contraseña inicial (mínimo 8 caracteres)</label>
+        <input id="newUserPassword" type="password" autocomplete="new-password" minlength="8" required>
+
+        <label for="newUserProfile">Perfil</label>
+        <select id="newUserProfile">
+          <option value="consulta">Consulta</option>
+          <option value="admin">Administrador</option>
+        </select>
+
+        <button type="submit">Guardar usuario</button>
+      </form>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre y Apellido</th>
+              <th>DNI</th>
+              <th>Correo</th>
+              <th>Perfil</th>
+              <th>Último ingreso</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </section>
     </div>
   </section>
 
@@ -1172,7 +1216,10 @@
     async function performLogout() {
       stopInactivityTimer();
       stopAutoRefreshTimer();
-      if (window.location.hash === "#detalles") history.replaceState(null, "", window.location.pathname + window.location.search);
+      isAdminUser = false;
+      roleKnown = false;
+      manageUsersButton.hidden = true;
+      if (window.location.hash === "#detalles" || window.location.hash === "#usuarios") clearHash();
       showView("main");
       const { error } = await db.auth.signOut();
       if (error) showStatus(error.message, "error");
@@ -1201,6 +1248,9 @@
         stopInactivityTimer();
         stopAutoRefreshTimer();
         currentUserId = null;
+        isAdminUser = false;
+        roleKnown = false;
+        manageUsersButton.hidden = true;
         loginPanel.hidden = false;
         appPanel.hidden = true;
         recoveryPanel.hidden = true;
@@ -1235,6 +1285,10 @@
       const isAdmin = role === "admin";
       adminPanel.hidden = !isAdmin;
       deleteAllEventsButton.hidden = !isAdmin;
+      manageUsersButton.hidden = !isAdmin;
+      isAdminUser = isAdmin;
+      roleKnown = true;
+      applyViewFromHash();
 
       try {
         await loadTotals();
@@ -1594,35 +1648,86 @@
       }
     }
 
-    // Torta pequeña de la vista principal (proporción de cada tipo de voto)
+    // Gráfico de torta (dona) de la vista principal
+    let pieState = { vals: null, sum: 0 };
+    const pieEl = document.getElementById("votePie");
+
+    function polar(cx, cy, r, a) { return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+
     function renderPie(vals, sum) {
-      const el = document.getElementById("miniPie");
-      const C = 34, R = 32;
+      pieState = { vals, sum };
+      const C = 110, R = 102, r = 62, mid = (R + r) / 2;
       if (!sum) {
-        el.innerHTML = `<circle cx="${C}" cy="${C}" r="${R}" fill="#e3e5e8"><title>Sin votos para mostrar</title></circle>`;
-        el.setAttribute("aria-label", "Sin votos para mostrar");
+        pieEl.innerHTML =
+          `<circle cx="${C}" cy="${C}" r="${mid}" fill="none" stroke="#e3e5e8" stroke-width="${R - r}"/>` +
+          `<text class="pie-center-main" x="${C}" y="${C + 4}" text-anchor="middle">Sin votos</text>` +
+          `<text class="pie-center-sub" x="${C}" y="${C + 24}" text-anchor="middle">en el período</text>`;
+        pieEl.setAttribute("aria-label", "Sin votos para mostrar");
+        pieEl.classList.remove("has-hover");
         return;
       }
       const parts = [1, 2, 3].filter((n) => vals[n] > 0);
       const label = (n) => `${VOTE_META[n].name}: ${fmtNumber(vals[n])} (${fmtPercent(vals[n] / sum * 100)})`;
-      let html = "";
+      let slices = "", labels = "";
       let a0 = -Math.PI / 2;
       for (const n of parts) {
         const color = VOTE_META[n].color;
-        if (parts.length === 1) {
-          html += `<circle cx="${C}" cy="${C}" r="${R}" fill="${color}"><title>${label(n)}</title></circle>`;
-          break;
-        }
         const frac = vals[n] / sum;
-        const a1 = a0 + frac * 2 * Math.PI;
-        const x0 = (C + R * Math.cos(a0)).toFixed(2), y0 = (C + R * Math.sin(a0)).toFixed(2);
-        const x1 = (C + R * Math.cos(a1)).toFixed(2), y1 = (C + R * Math.sin(a1)).toFixed(2);
-        html += `<path d="M${C} ${C} L${x0} ${y0} A${R} ${R} 0 ${frac > 0.5 ? 1 : 0} 1 ${x1} ${y1} Z" fill="${color}"><title>${label(n)}</title></path>`;
-        a0 = a1;
+        let a1, midA;
+        if (parts.length === 1) {
+          slices += `<circle class="pie-slice" data-n="${n}" tabindex="0" cx="${C}" cy="${C}" r="${mid}" fill="none" stroke="${color}" stroke-width="${R - r}" style="stroke-linecap:butt"><title>${label(n)}</title></circle>`;
+          midA = -Math.PI / 2;
+        } else {
+          a1 = a0 + frac * 2 * Math.PI;
+          midA = (a0 + a1) / 2;
+          const [x0o, y0o] = polar(C, C, R, a0), [x1o, y1o] = polar(C, C, R, a1);
+          const [x1i, y1i] = polar(C, C, r, a1), [x0i, y0i] = polar(C, C, r, a0);
+          const large = frac > 0.5 ? 1 : 0;
+          const f = (v) => v.toFixed(2);
+          slices += `<path class="pie-slice" data-n="${n}" tabindex="0" fill="${color}" d="M${f(x0o)} ${f(y0o)} A${R} ${R} 0 ${large} 1 ${f(x1o)} ${f(y1o)} L${f(x1i)} ${f(y1i)} A${r} ${r} 0 ${large} 0 ${f(x0i)} ${f(y0i)} Z"><title>${label(n)}</title></path>`;
+          a0 = a1;
+        }
+        if (frac >= 0.07) {
+          const [lx, ly] = polar(C, C, mid, midA);
+          labels += `<text class="pie-pct" x="${lx.toFixed(1)}" y="${(ly + 4.5).toFixed(1)}" text-anchor="middle">${fmtPercent(frac * 100)}</text>`;
+        }
       }
-      el.innerHTML = html;
-      el.setAttribute("aria-label", "Distribución de votos: " + parts.map(label).join(", "));
+      pieEl.innerHTML = slices + labels +
+        `<text id="pieCenterMain" class="pie-center-main" x="${C}" y="${C + 4}" text-anchor="middle"></text>` +
+        `<text id="pieCenterSub" class="pie-center-sub" x="${C}" y="${C + 24}" text-anchor="middle"></text>`;
+      pieEl.setAttribute("aria-label", "Distribución de votos: " + parts.map(label).join(", "));
+      setPieCenter(null);
     }
+
+    // Texto del centro: total por defecto; al pasar sobre una porción, su detalle
+    function setPieCenter(n) {
+      const m = document.getElementById("pieCenterMain");
+      const sEl = document.getElementById("pieCenterSub");
+      if (!m || !sEl || !pieState.sum) return;
+      if (n) {
+        const v = pieState.vals[n];
+        const pct = fmtPercent(v / pieState.sum * 100);
+        const percentMode = displayMode === "percent";
+        m.textContent = percentMode ? pct : fmtNumber(v);
+        sEl.textContent = `${VOTE_META[n].name} · ${percentMode ? fmtNumber(v) + (v === 1 ? " voto" : " votos") : pct}`;
+      } else {
+        m.textContent = fmtNumber(pieState.sum);
+        sEl.textContent = "votos en total";
+      }
+      pieEl.classList.toggle("has-hover", !!n);
+      pieEl.querySelectorAll(".pie-slice").forEach((x) => x.classList.toggle("hot", Number(x.dataset.n) === n));
+    }
+
+    pieEl.addEventListener("pointerover", (e) => {
+      const sl = e.target.closest(".pie-slice");
+      setPieCenter(sl ? Number(sl.dataset.n) : null);
+    });
+    pieEl.addEventListener("pointerleave", () => setPieCenter(null));
+    pieEl.addEventListener("focusin", (e) => {
+      const sl = e.target.closest(".pie-slice");
+      if (sl) setPieCenter(Number(sl.dataset.n));
+    });
+    pieEl.addEventListener("focusout", () => setPieCenter(null));
 
     function setDisplayMode(mode) {
       displayMode = mode;
@@ -1639,34 +1744,59 @@
       b.addEventListener("click", () => setDisplayMode(b.dataset.mode));
     });
 
-    // ---------- Navegación entre la vista principal y la de detalles ----------
+    // ---------- Navegación entre vistas: totales, detalles y administración ----------
     const mainView = document.getElementById("mainView");
     const detailsView = document.getElementById("detailsView");
+    const adminView = document.getElementById("adminView");
+    const manageUsersButton = document.getElementById("manageUsersButton");
     const DETAILS_HASH = "#detalles";
+    const ADMIN_HASH = "#usuarios";
+    let isAdminUser = false;   // se completa al leer el perfil
+    let roleKnown = false;
 
     function showView(view) {
-      const isDetails = view === "details";
-      mainView.hidden = isDetails;
-      detailsView.hidden = !isDetails;
-      detailsVisible = isDetails;
+      // La vista de administración solo se muestra a usuarios con perfil admin
+      // (la autorización real la sigue verificando el servidor en la función de borde).
+      if (view === "admin" && !isAdminUser) view = "main";
+      mainView.hidden = view !== "main";
+      detailsView.hidden = view !== "details";
+      adminView.hidden = view !== "admin";
+      detailsVisible = view === "details";
       window.scrollTo({ top: 0 });
-      if (isDetails) {
+      if (view === "details") {
         renderCharts();                 // ya con la vista visible, para medir bien el ancho
         if (detailsStale) loadSeries();
       }
     }
 
+    function clearHash() {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+
     function applyViewFromHash() {
-      showView(window.location.hash === DETAILS_HASH ? "details" : "main");
+      const h = window.location.hash;
+      if (h === ADMIN_HASH) {
+        if (!roleKnown) { showView("main"); return; }   // se vuelve a evaluar al conocer el perfil
+        if (!isAdminUser) { clearHash(); showView("main"); return; }
+        showView("admin");
+        return;
+      }
+      showView(h === DETAILS_HASH ? "details" : "main");
+    }
+
+    function goToMainView() {
+      history.pushState(null, "", window.location.pathname + window.location.search);
+      showView("main");
     }
 
     document.getElementById("moreDetailsButton").addEventListener("click", () => {
       window.location.hash = DETAILS_HASH;   // también permite usar el botón "atrás" del navegador
     });
-    document.getElementById("backToTotalsButton").addEventListener("click", () => {
-      history.pushState(null, "", window.location.pathname + window.location.search);
-      showView("main");
+    manageUsersButton.addEventListener("click", () => {
+      window.location.hash = ADMIN_HASH;
     });
+    document.getElementById("backToTotalsButton").addEventListener("click", goToMainView);
+    document.getElementById("backFromAdminButton").addEventListener("click", goToMainView);
     window.addEventListener("hashchange", applyViewFromHash);
     window.addEventListener("popstate", applyViewFromHash);
 
